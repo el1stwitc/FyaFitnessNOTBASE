@@ -492,16 +492,24 @@
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="text-sm font-medium text-gray-500 mb-2 block">Вес (кг)</label>
-                        <input type="number" id="weightInput" placeholder="50" 
-                            class="w-full input-modern rounded-2xl px-4 py-3 text-2xl font-bold text-center">
+                        <input type="text" id="weightInput" placeholder="50 или 50/55/60" 
+                            class="w-full input-modern rounded-2xl px-4 py-3 text-xl font-bold text-center"
+                            inputmode="decimal">
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-gray-500 mb-2 block">Подходы</label>
+                        <label class="text-sm font-medium text-gray-500 mb-2 block">Повторения</label>
                         <input type="text" id="setsInput" placeholder="10/10/8" 
-                            class="w-full input-modern rounded-2xl px-4 py-3 text-2xl font-bold text-center">
+                            class="w-full input-modern rounded-2xl px-4 py-3 text-xl font-bold text-center"
+                            inputmode="numeric">
                     </div>
                 </div>
-                <p class="text-xs text-gray-400 text-center">💡 Введите повторения через слэш: 12/10/8</p>
+                <p class="text-xs text-gray-400 text-center">💡 Можно вводить разные веса: 50/55/60 кг → 10/10/8 повт.</p>
+                
+                <!-- Превью подходов -->
+                <div id="setsPreview" class="mt-4 hidden">
+                    <div class="text-xs font-medium text-gray-500 mb-2">ПРЕВЬЮ ПОДХОДОВ:</div>
+                    <div id="setsPreviewContent" class="flex flex-wrap gap-2"></div>
+                </div>
             </div>
 
             <!-- Заметки -->
@@ -596,16 +604,28 @@
                     </div>
                 </div>
                 <div id="prBlock" class="text-center py-4">
-                    <p class="text-gray-400">Выберите упражнение для просмотра рекорда</p>
+                    <p class="text-gray-400">Введите упражнение для просмотра рекорда</p>
                 </div>
             </div>
 
-            <!-- Выбор упражнения для графика -->
+            <!-- Выбор упражнения для графика с автокомплитом -->
             <div class="mb-6 animate-slide-up delay-100" style="opacity: 0;">
-                <select id="progressExerciseSelect" onchange="updateProgressChart()" 
-                    class="w-full input-modern rounded-2xl px-5 py-4 text-lg font-medium appearance-none cursor-pointer">
-                    <option value="">Выберите упражнение</option>
-                </select>
+                <h2 class="text-sm font-semibold text-gray-500 mb-3">ВЫБЕРИТЕ УПРАЖНЕНИЕ</h2>
+                <div class="relative" id="progressAutocomplete">
+                    <input type="text" id="progressExerciseInput" placeholder="Введите название упражнения..."
+                        class="w-full input-modern rounded-2xl px-5 py-4 text-lg font-medium"
+                        autocomplete="off">
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <div id="progressExerciseDropdown" class="autocomplete-dropdown hidden"></div>
+                </div>
+                
+                <!-- Быстрый доступ к недавним упражнениям -->
+                <div class="mt-3" id="recentExercises">
+                    <p class="text-xs text-gray-400 mb-2">Недавние:</p>
+                    <div id="recentExercisesList" class="flex flex-wrap gap-2"></div>
+                </div>
             </div>
 
             <!-- График -->
@@ -768,13 +788,28 @@
             renderCategories();
             renderArchiveFilters();
             updateExerciseAutocomplete();
-            updateProgressExerciseSelect();
+            updateRecentExercises();
             renderTodayWorkouts();
             updateStats();
             setCurrentDate();
             renderCalendar();
             setupAutocomplete();
+            setupProgressAutocomplete();
+            setupWeightSetsPreview();
         });
+        
+        /**
+         * Настройка превью подходов в реальном времени
+         */
+        function setupWeightSetsPreview() {
+            const weightInput = document.getElementById('weightInput');
+            const setsInput = document.getElementById('setsInput');
+            
+            if (weightInput && setsInput) {
+                weightInput.addEventListener('input', updateSetsPreview);
+                setsInput.addEventListener('input', updateSetsPreview);
+            }
+        }
 
         /**
          * Установка текущей даты в заголовке
@@ -980,8 +1015,8 @@
             // Специальные действия для страниц
             if (pageName === 'progress') {
                 updateStats();
-                updateProgressExerciseSelect();
-                if (document.getElementById('progressExerciseSelect').value) {
+                updateRecentExercises();
+                if (document.getElementById('progressExerciseInput').value) {
                     updateProgressChart();
                 }
             } else if (pageName === 'history') {
@@ -1021,14 +1056,97 @@
         }
 
         /**
-         * Обновление селекта упражнений для страницы прогресса
+         * Обновление списка недавних упражнений для страницы прогресса
          */
-        function updateProgressExerciseSelect() {
-            const select = document.getElementById('progressExerciseSelect');
+        function updateRecentExercises() {
+            const container = document.getElementById('recentExercisesList');
+            if (!container) return;
+            
+            // Получаем последние 5 уникальных упражнений
+            const recentExercises = [...new Set(
+                workouts
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .map(w => w.exercise)
+            )].slice(0, 5);
+            
+            if (recentExercises.length === 0) {
+                container.innerHTML = '<span class="text-gray-400 text-xs">Пока нет упражнений</span>';
+                return;
+            }
+            
+            container.innerHTML = recentExercises.map(ex => `
+                <button onclick="selectProgressExercise('${ex}')" 
+                    class="px-3 py-1.5 rounded-xl bg-white/80 text-sm text-gray-600 hover:bg-red-50 hover:text-red-500 transition">
+                    ${ex}
+                </button>
+            `).join('');
+        }
+        
+        /**
+         * Выбор упражнения на странице прогресса
+         */
+        function selectProgressExercise(exercise) {
+            document.getElementById('progressExerciseInput').value = exercise;
+            document.getElementById('progressExerciseDropdown').classList.add('hidden');
+            updateProgressChart();
+        }
+        
+        /**
+         * Настройка автокомплита для страницы прогресса
+         */
+        function setupProgressAutocomplete() {
+            const input = document.getElementById('progressExerciseInput');
+            const dropdown = document.getElementById('progressExerciseDropdown');
+            
+            if (!input || !dropdown) return;
+            
+            input.addEventListener('input', () => {
+                const query = input.value.toLowerCase().trim();
+                showProgressAutocomplete(query);
+                // Также обновляем график при вводе
+                clearTimeout(input.searchTimeout);
+                input.searchTimeout = setTimeout(() => {
+                    updateProgressChart();
+                }, 300);
+            });
+            
+            input.addEventListener('focus', () => {
+                showProgressAutocomplete(input.value.toLowerCase().trim());
+            });
+            
+            input.addEventListener('blur', () => {
+                setTimeout(() => {
+                    dropdown.classList.add('hidden');
+                }, 200);
+            });
+        }
+        
+        /**
+         * Показ автокомплита для страницы прогресса
+         */
+        function showProgressAutocomplete(query) {
+            const dropdown = document.getElementById('progressExerciseDropdown');
+            
+            // Получаем все уникальные упражнения из истории
             const allExercises = [...new Set(workouts.map(w => w.exercise))];
             
-            select.innerHTML = '<option value="">Выберите упражнение</option>' +
-                allExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
+            let filtered = allExercises;
+            if (query) {
+                filtered = allExercises.filter(ex => 
+                    ex.toLowerCase().includes(query)
+                );
+            }
+            
+            if (filtered.length === 0) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+            
+            dropdown.innerHTML = filtered.map(ex => `
+                <div class="autocomplete-item" onclick="selectProgressExercise('${ex}')">${ex}</div>
+            `).join('');
+            
+            dropdown.classList.remove('hidden');
         }
 
         // ==========================================
@@ -1038,7 +1156,6 @@
         /**
          * Умный парсинг строки подходов
          * Преобразует "12/10/8" в [12, 10, 8]
-         * Поддерживает формат с весом: "10x50/8x55"
          * @param {string} input - Строка с повторениями
          * @returns {number[]} - Массив чисел
          */
@@ -1049,19 +1166,73 @@
             return input
                 .split(/[\/,\s]+/)
                 .map(s => {
-                    // Обрабатываем формат "10x50" как просто "10"
                     const match = s.match(/^(\d+)/);
                     return match ? parseInt(match[1]) : null;
                 })
                 .filter(n => n !== null && n > 0);
         }
+        
+        /**
+         * Умный парсинг строки весов
+         * Преобразует "50/55/60" в [50, 55, 60]
+         * Если введено одно число — возвращает массив с этим числом
+         * @param {string} input - Строка с весами
+         * @returns {number[]} - Массив весов
+         */
+        function parseWeights(input) {
+            if (!input) return [];
+            
+            // Разделяем по слэшу, запятой или пробелу
+            return input
+                .split(/[\/,\s]+/)
+                .map(s => {
+                    const num = parseFloat(s.replace(',', '.'));
+                    return !isNaN(num) && num > 0 ? num : null;
+                })
+                .filter(n => n !== null);
+        }
+        
+        /**
+         * Обновление превью подходов в реальном времени
+         */
+        function updateSetsPreview() {
+            const weightInput = document.getElementById('weightInput').value;
+            const setsInput = document.getElementById('setsInput').value;
+            const preview = document.getElementById('setsPreview');
+            const content = document.getElementById('setsPreviewContent');
+            
+            const weights = parseWeights(weightInput);
+            const sets = parseSets(setsInput);
+            
+            if (sets.length === 0 || weights.length === 0) {
+                preview.classList.add('hidden');
+                return;
+            }
+            
+            preview.classList.remove('hidden');
+            
+            // Генерируем превью для каждого подхода
+            const previewItems = sets.map((reps, index) => {
+                // Если весов меньше чем подходов — берем последний вес
+                const weight = weights[index] !== undefined ? weights[index] : weights[weights.length - 1];
+                return `
+                    <div class="bg-white rounded-xl px-3 py-2 text-sm">
+                        <span class="font-bold text-red-500">${weight}</span>
+                        <span class="text-gray-400">кг ×</span>
+                        <span class="font-bold text-gray-700">${reps}</span>
+                    </div>
+                `;
+            });
+            
+            content.innerHTML = previewItems.join('');
+        }
 
         /**
-         * Сохранение тренировки
+         * Сохранение тренировки с поддержкой множественных весов
          */
         function saveWorkout() {
             const exercise = document.getElementById('exerciseInput').value.trim();
-            const weight = parseFloat(document.getElementById('weightInput').value);
+            const weightInput = document.getElementById('weightInput').value;
             const setsInput = document.getElementById('setsInput').value;
             const notes = document.getElementById('notesInput').value.trim();
             
@@ -1071,7 +1242,8 @@
                 return;
             }
             
-            if (!weight || weight <= 0) {
+            const weights = parseWeights(weightInput);
+            if (weights.length === 0) {
                 showToast('Укажите вес');
                 return;
             }
@@ -1085,18 +1257,28 @@
             // Добавляем новое упражнение в базу, если его нет
             updateExerciseDatabase(exercise, currentCategory);
             
-            // Создаем запись
-            const workout = {
-                id: Date.now(),
-                date: new Date().toISOString(),
-                category: currentCategory,
-                exercise: exercise,
-                weight: weight,
-                sets: sets,
-                notes: notes
-            };
+            // Создаем записи для каждого подхода с разными весами
+            const today = new Date().toISOString();
             
-            workouts.push(workout);
+            sets.forEach((reps, index) => {
+                // Если весов меньше чем подходов — берем последний вес
+                const weight = weights[index] !== undefined ? weights[index] : weights[weights.length - 1];
+                
+                const workout = {
+                    id: Date.now() + index,
+                    date: today,
+                    category: currentCategory,
+                    exercise: exercise,
+                    weight: weight,
+                    sets: [reps], // Один подход
+                    notes: index === 0 ? notes : '', // Заметки только к первому
+                    setNumber: index + 1, // Номер подхода
+                    totalSets: sets.length // Всего подходов
+                };
+                
+                workouts.push(workout);
+            });
+            
             saveToLocalStorage();
             
             // Очищаем форму
@@ -1104,11 +1286,12 @@
             document.getElementById('setsInput').value = '';
             document.getElementById('notesInput').value = '';
             document.getElementById('exerciseInput').value = '';
+            document.getElementById('setsPreview').classList.add('hidden');
             
             // Обновляем UI
             renderTodayWorkouts();
-            updateProgressExerciseSelect();
-            showToast('✅ Сохранено!');
+            updateRecentExercises();
+            showToast(`✅ Сохранено ${sets.length} подходов!`);
             
             // Haptic feedback
             if (typeof hapticFeedback === 'function') hapticFeedback('success');
@@ -1148,7 +1331,7 @@
         // ==========================================
         
         /**
-         * Рендер сегодняшних тренировок
+         * Рендер сегодняшних тренировок (группировка по упражнениям)
          */
         function renderTodayWorkouts() {
             const container = document.getElementById('todayList');
@@ -1156,7 +1339,7 @@
             
             const todayWorkouts = workouts.filter(w => 
                 new Date(w.date).toDateString() === today
-            ).reverse();
+            );
             
             if (todayWorkouts.length === 0) {
                 container.innerHTML = `
@@ -1168,26 +1351,73 @@
                 return;
             }
             
-            container.innerHTML = todayWorkouts.map((w, i) => `
-                <div class="history-item glass-card rounded-2xl p-4" style="animation-delay: ${i * 0.1}s">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <span class="text-xs px-2 py-1 rounded-lg bg-red-50 text-red-500 font-medium">${w.category}</span>
-                            <h3 class="font-semibold text-gray-800 mt-2">${w.exercise}</h3>
-                            <p class="text-sm text-gray-500 mt-1">
-                                <span class="text-red-500 font-bold">${w.weight} кг</span> · 
-                                ${w.sets.join(' / ')} повт.
-                            </p>
-                            ${w.notes ? `<p class="text-xs text-gray-400 mt-2 italic">"${w.notes}"</p>` : ''}
+            // Группируем по упражнениям
+            const grouped = {};
+            todayWorkouts.forEach(w => {
+                const key = `${w.exercise}_${w.category}`;
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        exercise: w.exercise,
+                        category: w.category,
+                        sets: [],
+                        notes: w.notes || '',
+                        ids: []
+                    };
+                }
+                grouped[key].sets.push({ weight: w.weight, reps: w.sets[0] || w.sets });
+                grouped[key].ids.push(w.id);
+                if (w.notes && !grouped[key].notes) {
+                    grouped[key].notes = w.notes;
+                }
+            });
+            
+            const groupedArray = Object.values(grouped).reverse();
+            
+            container.innerHTML = groupedArray.map((g, i) => {
+                // Форматируем подходы
+                const setsDisplay = g.sets.map(s => {
+                    const reps = Array.isArray(s.reps) ? s.reps.join('/') : s.reps;
+                    return `<span class="inline-flex items-center gap-1 bg-white/70 px-2 py-1 rounded-lg text-sm">
+                        <span class="text-red-500 font-bold">${s.weight}</span>
+                        <span class="text-gray-400">×</span>
+                        <span class="font-semibold">${reps}</span>
+                    </span>`;
+                }).join('');
+                
+                return `
+                    <div class="history-item glass-card rounded-2xl p-4" style="animation-delay: ${i * 0.1}s">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <span class="text-xs px-2 py-1 rounded-lg bg-red-50 text-red-500 font-medium">${g.category}</span>
+                                <h3 class="font-semibold text-gray-800 mt-2">${g.exercise}</h3>
+                                <div class="flex flex-wrap gap-1.5 mt-2">
+                                    ${setsDisplay}
+                                </div>
+                                ${g.notes ? `<p class="text-xs text-gray-400 mt-2 italic">"${g.notes}"</p>` : ''}
+                            </div>
+                            <button onclick="deleteExerciseGroup([${g.ids.join(',')}])" class="text-gray-300 hover:text-red-500 transition p-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
                         </div>
-                        <button onclick="deleteWorkout(${w.id})" class="text-gray-300 hover:text-red-500 transition p-1">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+        }
+        
+        /**
+         * Удаление группы упражнений
+         */
+        function deleteExerciseGroup(ids) {
+            if (confirm('Удалить все подходы этого упражнения?')) {
+                workouts = workouts.filter(w => !ids.includes(w.id));
+                saveToLocalStorage();
+                renderTodayWorkouts();
+                updateRecentExercises();
+                renderCalendar();
+                showToast('Удалено');
+            }
         }
 
         /**
@@ -1198,7 +1428,7 @@
                 workouts = workouts.filter(w => w.id !== id);
                 saveToLocalStorage();
                 renderTodayWorkouts();
-                updateProgressExerciseSelect();
+                updateRecentExercises();
                 renderCalendar();
                 showToast('Удалено');
             }
@@ -1557,7 +1787,7 @@
          * Обновление графика прогресса и блока PR
          */
         function updateProgressChart() {
-            const exercise = document.getElementById('progressExerciseSelect').value;
+            const exercise = document.getElementById('progressExerciseInput').value.trim();
             if (!exercise) return;
             
             // Фильтруем данные по упражнению
