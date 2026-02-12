@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>FitLog — Трекер тренировок</title>
+    <title>FitnessControl by FYA — Трекер тренировок</title>
     
     <!-- PWA Meta Tags для iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="FitLog">
+    <meta name="apple-mobile-web-app-title" content="FitnessControl">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#ef4444">
     <meta name="format-detection" content="telephone=no">
@@ -20,13 +20,13 @@
     <link rel="apple-touch-icon" sizes="167x167" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 167 167'><rect fill='%23ef4444' width='167' height='167' rx='36'/><text x='83' y='118' font-size='90' text-anchor='middle' fill='white'>💪</text></svg>">
     
     <!-- Splash Screens для iOS -->
-    <link rel="apple-touch-startup-image" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1170 2532'><rect fill='%23f8f9fa' width='1170' height='2532'/><text x='585' y='1200' font-size='200' text-anchor='middle'>💪</text><text x='585' y='1400' font-size='80' text-anchor='middle' fill='%23ef4444' font-weight='bold'>FitLog</text></svg>" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1170 2532'><rect fill='%23f8f9fa' width='1170' height='2532'/><text x='585' y='1100' font-size='200' text-anchor='middle'>💪</text><text x='585' y='1350' font-size='60' text-anchor='middle' fill='%23ef4444' font-weight='bold'>FitnessControl</text><text x='585' y='1420' font-size='40' text-anchor='middle' fill='%23666'>by FYA</text></svg>" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect fill='%23ef4444' width='32' height='32' rx='8'/><text x='16' y='24' font-size='20' text-anchor='middle' fill='white'>💪</text></svg>">
     
     <!-- Web App Manifest -->
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22FitLog%20%E2%80%94%20%D0%A2%D1%80%D0%B5%D0%BA%D0%B5%D1%80%20%D1%82%D1%80%D0%B5%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%BE%D0%BA%22%2C%22short_name%22%3A%22FitLog%22%2C%22description%22%3A%22%D0%A2%D1%80%D0%B5%D0%BA%D0%B5%D1%80%20%D1%82%D1%80%D0%B5%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%BE%D0%BA%20%D0%B4%D0%BB%D1%8F%20%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B7%D0%B0%D0%BB%D0%B0%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8f9fa%22%2C%22theme_color%22%3A%22%23ef4444%22%2C%22orientation%22%3A%22portrait%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20fill%3D%27%2523ef4444%27%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27100%27%2F%3E%3Ctext%20x%3D%27256%27%20y%3D%27350%27%20font-size%3D%27280%27%20text-anchor%3D%27middle%27%20fill%3D%27white%27%3E%F0%9F%92%AA%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22FitnessControl%20by%20FYA%22%2C%22short_name%22%3A%22FitnessControl%22%2C%22description%22%3A%22%D0%A2%D1%80%D0%B5%D0%BA%D0%B5%D1%80%20%D1%82%D1%80%D0%B5%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%BE%D0%BA%20%D0%B4%D0%BB%D1%8F%20%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B7%D0%B0%D0%BB%D0%B0%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8f9fa%22%2C%22theme_color%22%3A%22%23ef4444%22%2C%22orientation%22%3A%22portrait%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20fill%3D%27%2523ef4444%27%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27100%27%2F%3E%3Ctext%20x%3D%27256%27%20y%3D%27350%27%20font-size%3D%27280%27%20text-anchor%3D%27middle%27%20fill%3D%27white%27%3E%F0%9F%92%AA%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
     
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -421,8 +421,8 @@
                     💪
                 </div>
                 <div class="flex-1">
-                    <h3 class="font-semibold text-gray-800">Установить FitLog</h3>
-                    <p class="text-xs text-gray-500">Добавить на главный экран</p>
+                    <h3 class="font-semibold text-gray-800">Установить FitnessControl</h3>
+                    <p class="text-xs text-gray-500">by FYA · Добавить на главный экран</p>
                 </div>
                 <button onclick="hideInstallBanner()" class="text-gray-400 p-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -447,9 +447,10 @@
     <header class="sticky top-0 z-50 glass-card border-b border-white/50 safe-top">
         <div class="max-w-lg mx-auto px-5 py-4 pt-[max(16px,env(safe-area-inset-top))] flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold bg-gradient-to-r from-red-500 to-red-800 bg-clip-text text-transparent">
-                    FitLog
+                <h1 class="text-xl font-bold bg-gradient-to-r from-red-500 to-red-800 bg-clip-text text-transparent">
+                    FitnessControl
                 </h1>
+                <p class="text-[10px] text-gray-400 -mt-0.5">by FYA</p>
                 <p class="text-xs text-gray-400 mt-0.5" id="currentDate"></p>
             </div>
             <button onclick="openTimer()" class="w-12 h-12 rounded-2xl glass-card flex items-center justify-center hover:scale-105 transition-transform">
@@ -829,13 +830,13 @@
          */
         function loadFromLocalStorage() {
             // Загружаем тренировки
-            const savedWorkouts = localStorage.getItem('fitlog_workouts');
+            const savedWorkouts = localStorage.getItem('fc_fya_workouts');
             if (savedWorkouts) {
                 workouts = JSON.parse(savedWorkouts);
             }
             
             // Загружаем пользовательскую базу упражнений
-            const savedExercises = localStorage.getItem('fitlog_exercises');
+            const savedExercises = localStorage.getItem('fc_fya_exercises');
             if (savedExercises) {
                 exerciseDatabase = JSON.parse(savedExercises);
             } else {
@@ -848,14 +849,14 @@
          * Сохранение данных в LocalStorage
          */
         function saveToLocalStorage() {
-            localStorage.setItem('fitlog_workouts', JSON.stringify(workouts));
+            localStorage.setItem('fc_fya_workouts', JSON.stringify(workouts));
         }
         
         /**
          * Сохранение базы упражнений в LocalStorage
          */
         function saveExerciseDatabase() {
-            localStorage.setItem('fitlog_exercises', JSON.stringify(exerciseDatabase));
+            localStorage.setItem('fc_fya_exercises', JSON.stringify(exerciseDatabase));
         }
 
         /**
@@ -2021,7 +2022,7 @@
         if ('serviceWorker' in navigator) {
             // Создаем Service Worker inline через Blob
             const swCode = `
-                const CACHE_NAME = 'fitlog-v1';
+                const CACHE_NAME = 'fitnesscontrol-v1';
                 const OFFLINE_URLS = [
                     '/',
                     '/index.html'
@@ -2105,7 +2106,7 @@
          */
         function showInstallBanner() {
             // Проверяем, не показывали ли уже баннер
-            const dismissed = localStorage.getItem('fitlog_install_dismissed');
+            const dismissed = localStorage.getItem('fc_fya_install_dismissed');
             if (dismissed) return;
             
             // Показываем только на iOS и не в standalone режиме
@@ -2121,7 +2122,7 @@
          */
         function hideInstallBanner() {
             document.getElementById('installBanner').classList.add('hidden');
-            localStorage.setItem('fitlog_install_dismissed', 'true');
+            localStorage.setItem('fc_fya_install_dismissed', 'true');
         }
         
         // Показываем баннер при загрузке
@@ -2182,7 +2183,7 @@
          * Уведомление для standalone режима
          */
         if (isInStandaloneMode()) {
-            console.log('🚀 FitLog запущен как приложение!');
+            console.log('🚀 FitnessControl by FYA запущен как приложение!');
         }
     </script>
 </body>
