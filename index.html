@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FitLog — Трекер тренировок</title>
+    
+    <!-- PWA Meta Tags для iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FitLog">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ef4444">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23ef4444' width='180' height='180' rx='40'/><text x='90' y='130' font-size='100' text-anchor='middle' fill='white'>💪</text></svg>">
+    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152 152'><rect fill='%23ef4444' width='152' height='152' rx='32'/><text x='76' y='105' font-size='80' text-anchor='middle' fill='white'>💪</text></svg>">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23ef4444' width='180' height='180' rx='40'/><text x='90' y='130' font-size='100' text-anchor='middle' fill='white'>💪</text></svg>">
+    <link rel="apple-touch-icon" sizes="167x167" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 167 167'><rect fill='%23ef4444' width='167' height='167' rx='36'/><text x='83' y='118' font-size='90' text-anchor='middle' fill='white'>💪</text></svg>">
+    
+    <!-- Splash Screens для iOS -->
+    <link rel="apple-touch-startup-image" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1170 2532'><rect fill='%23f8f9fa' width='1170' height='2532'/><text x='585' y='1200' font-size='200' text-anchor='middle'>💪</text><text x='585' y='1400' font-size='80' text-anchor='middle' fill='%23ef4444' font-weight='bold'>FitLog</text></svg>" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect fill='%23ef4444' width='32' height='32' rx='8'/><text x='16' y='24' font-size='20' text-anchor='middle' fill='white'>💪</text></svg>">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22FitLog%20%E2%80%94%20%D0%A2%D1%80%D0%B5%D0%BA%D0%B5%D1%80%20%D1%82%D1%80%D0%B5%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%BE%D0%BA%22%2C%22short_name%22%3A%22FitLog%22%2C%22description%22%3A%22%D0%A2%D1%80%D0%B5%D0%BA%D0%B5%D1%80%20%D1%82%D1%80%D0%B5%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%BE%D0%BA%20%D0%B4%D0%BB%D1%8F%20%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B7%D0%B0%D0%BB%D0%B0%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8f9fa%22%2C%22theme_color%22%3A%22%23ef4444%22%2C%22orientation%22%3A%22portrait%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20fill%3D%27%2523ef4444%27%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27100%27%2F%3E%3Ctext%20x%3D%27256%27%20y%3D%27350%27%20font-size%3D%27280%27%20text-anchor%3D%27middle%27%20fill%3D%27white%27%3E%F0%9F%92%AA%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            padding-top: env(safe-area-inset-top);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            /* Отключаем overscroll на iOS */
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        html {
+            height: -webkit-fill-available;
+        }
+        
+        /* Поддержка safe-area для iPhone X+ */
+        .safe-top {
+            padding-top: max(16px, env(safe-area-inset-top));
+        }
+        
+        .safe-bottom {
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+        }
+        
+        /* Glassmorphism карточки */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Красный градиент для кнопок */
+        .btn-gradient {
+            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+        }
+        
+        .btn-gradient:active {
+            transform: translateY(0);
+        }
+        
+        /* Анимации появления */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes slideLeft {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .animate-slide-up {
+            animation: slideUp 0.4s ease-out forwards;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .animate-slide-left {
+            animation: slideLeft 0.3s ease-out forwards;
+        }
+        
+        .animate-slide-right {
+            animation: slideRight 0.3s ease-out forwards;
+        }
+        
+        /* Задержки анимации */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        /* Стили для инпутов */
+        .input-modern {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+        
+        .input-modern:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+            outline: none;
+        }
+        
+        /* Таймер */
+        .timer-ring {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+        
+        /* Навигация */
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item.active {
+            color: #ef4444;
+        }
+        
+        .nav-item.active .nav-dot {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .nav-dot {
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s ease;
+        }
+        
+        /* Скроллбар */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
+        }
+        
+        /* Категории */
+        .category-chip {
+            transition: all 0.2s ease;
+        }
+        
+        .category-chip.active {
+            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+            color: white;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+        }
+        
+        /* История */
+        .history-item {
+            opacity: 0;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+        
+        /* PR Badge */
+        .pr-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        /* Календарь */
+        .calendar-day {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .calendar-day:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .calendar-day.has-workout::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+            border-radius: 50%;
+        }
+        
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+            color: white;
+        }
+        
+        .calendar-day.selected::after {
+            background: white;
+        }
+        
+        .calendar-day.today {
+            border: 2px solid #ef4444;
+        }
+        
+        .calendar-day.filtered {
+            background: rgba(239, 68, 68, 0.15);
+        }
+        
+        .calendar-day.dimmed {
+            opacity: 0.3;
+        }
+        
+        /* Автокомплит */
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+        
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .autocomplete-item:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .autocomplete-item.highlighted {
+            background: rgba(239, 68, 68, 0.15);
+        }
+        
+        /* Модальное окно */
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        /* Теги фильтра */
+        .filter-tag {
+            transition: all 0.2s ease;
+        }
+        
+        .filter-tag.active {
+            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+            color: white;
+        }
+        
+        /* PWA Standalone режим */
+        @media all and (display-mode: standalone) {
+            body {
+                /* Убираем любые браузерные элементы */
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            
+            /* Предотвращаем выделение текста */
+            * {
+                -webkit-touch-callout: none;
+            }
+            
+            /* Разрешаем выделение в инпутах */
+            input, textarea {
+                -webkit-user-select: text;
+                user-select: text;
+            }
+        }
+        
+        /* Поддержка Dynamic Island на iPhone 14 Pro+ */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            .header-safe {
+                padding-top: calc(16px + env(safe-area-inset-top));
+            }
+        }
+        
+        /* Поддержка различных iPhone */
+        @media screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
+            /* iPhone X, XS, 11 Pro, 12 mini, 13 mini */
+            .safe-top { padding-top: 44px; }
+        }
+        
+        @media screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+            /* iPhone XR, 11 */
+            .safe-top { padding-top: 48px; }
+        }
+        
+        @media screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
+            /* iPhone 12, 12 Pro, 13, 13 Pro, 14 */
+            .safe-top { padding-top: 47px; }
+        }
+        
+        @media screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) {
+            /* iPhone 14 Pro, 15, 15 Pro */
+            .safe-top { padding-top: 59px; }
+        }
+        
+        @media screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
+            /* iPhone 14 Pro Max, 15 Plus, 15 Pro Max */
+            .safe-top { padding-top: 59px; }
+        }
+        
+        /* Улучшенные анимации для iOS */
+        @media (prefers-reduced-motion: no-preference) {
+            .animate-bounce-in {
+                animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            }
+            
+            @keyframes bounceIn {
+                0% { transform: scale(0.3); opacity: 0; }
+                50% { transform: scale(1.05); }
+                70% { transform: scale(0.9); }
+                100% { transform: scale(1); opacity: 1; }
+            }
+        }
+        
+        /* Pull-to-refresh индикатор */
+        .pull-indicator {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+        
+        .pull-indicator.visible {
+            transform: translateX(-50%) translateY(env(safe-area-inset-top, 20px));
+        }
+        
+        /* Toast уведомления с учетом safe-area */
+        .toast-notification {
+            top: calc(80px + env(safe-area-inset-top, 0px)) !important;
+        }
+        
+        /* Кнопки с лучшим тач-откликом */
+        button, .btn-gradient {
+            touch-action: manipulation;
+        }
+        
+        /* Фикс для клавиатуры iOS */
+        @supports (-webkit-touch-callout: none) {
+            input:focus, textarea:focus {
+                font-size: 16px !important; /* Предотвращает зум на iOS */
+            }
+        }
+    </style>
+</head>
+<body class="pb-24">
+    <!-- Баннер установки PWA -->
+    <div id="installBanner" class="hidden fixed top-0 left-0 right-0 z-[200] glass-card border-b border-white/50 animate-slide-up">
+        <div class="max-w-lg mx-auto px-5 py-4 safe-top">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-red-800 flex items-center justify-center text-2xl">
+                    💪
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-semibold text-gray-800">Установить FitLog</h3>
+                    <p class="text-xs text-gray-500">Добавить на главный экран</p>
+                </div>
+                <button onclick="hideInstallBanner()" class="text-gray-400 p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="mt-3 text-xs text-gray-500 bg-gray-50 rounded-xl p-3">
+                <p class="flex items-center gap-2">
+                    <span>1. Нажмите</span>
+                    <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L12 14M12 2L8 6M12 2L16 6M4 14V20C4 20.5523 4.44772 21 5 21H19C19.5523 21 20 20.5523 20 20V14"/>
+                    </svg>
+                    <span>(Поделиться)</span>
+                </p>
+                <p class="mt-1">2. Прокрутите вниз → "На экран «Домой»"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 glass-card border-b border-white/50 safe-top">
+        <div class="max-w-lg mx-auto px-5 py-4 pt-[max(16px,env(safe-area-inset-top))] flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-red-500 to-red-800 bg-clip-text text-transparent">
+                    FitLog
+                </h1>
+                <p class="text-xs text-gray-400 mt-0.5" id="currentDate"></p>
+            </div>
+            <button onclick="openTimer()" class="w-12 h-12 rounded-2xl glass-card flex items-center justify-center hover:scale-105 transition-transform">
+                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-lg mx-auto px-5 py-6">
+        <!-- Страница: Новая тренировка -->
+        <section id="page-workout" class="page">
+            <!-- Категории -->
+            <div class="mb-6 animate-slide-up">
+                <h2 class="text-sm font-semibold text-gray-500 mb-3">ГРУППА МЫШЦ</h2>
+                <div class="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1" id="categoriesContainer">
+                    <!-- Категории будут добавлены через JS -->
+                </div>
+            </div>
+
+            <!-- Выбор упражнения с автокомплитом -->
+            <div class="mb-6 animate-slide-up delay-100" style="opacity: 0;">
+                <h2 class="text-sm font-semibold text-gray-500 mb-3">УПРАЖНЕНИЕ</h2>
+                <div class="relative" id="exerciseAutocomplete">
+                    <input type="text" id="exerciseInput" placeholder="Введите или выберите упражнение..."
+                        class="w-full input-modern rounded-2xl px-5 py-4 text-lg font-medium"
+                        autocomplete="off">
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <div id="exerciseDropdown" class="autocomplete-dropdown hidden"></div>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">💡 Новые упражнения добавляются автоматически</p>
+            </div>
+
+            <!-- Ввод веса и подходов -->
+            <div class="glass-card rounded-3xl p-5 mb-6 animate-slide-up delay-200" style="opacity: 0;">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 mb-2 block">Вес (кг)</label>
+                        <input type="number" id="weightInput" placeholder="50" 
+                            class="w-full input-modern rounded-2xl px-4 py-3 text-2xl font-bold text-center">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500 mb-2 block">Подходы</label>
+                        <input type="text" id="setsInput" placeholder="10/10/8" 
+                            class="w-full input-modern rounded-2xl px-4 py-3 text-2xl font-bold text-center">
+                    </div>
+                </div>
+                <p class="text-xs text-gray-400 text-center">💡 Введите повторения через слэш: 12/10/8</p>
+            </div>
+
+            <!-- Заметки -->
+            <div class="mb-6 animate-slide-up delay-300" style="opacity: 0;">
+                <textarea id="notesInput" placeholder="Заметки к упражнению..." rows="2"
+                    class="w-full input-modern rounded-2xl px-5 py-4 text-base resize-none"></textarea>
+            </div>
+
+            <!-- Кнопка сохранения -->
+            <button onclick="saveWorkout()" class="w-full btn-gradient text-white font-semibold text-lg py-4 rounded-2xl animate-slide-up delay-300" style="opacity: 0;">
+                Сохранить подход
+            </button>
+
+            <!-- Сегодняшние записи -->
+            <div class="mt-8" id="todayWorkouts">
+                <h2 class="text-sm font-semibold text-gray-500 mb-4">СЕГОДНЯ</h2>
+                <div id="todayList" class="space-y-3">
+                    <!-- Записи будут добавлены через JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Страница: Архив с календарем -->
+        <section id="page-archive" class="page hidden">
+            <!-- Поиск -->
+            <div class="mb-6 animate-slide-up">
+                <div class="relative">
+                    <input type="text" id="archiveSearch" placeholder="Поиск по упражнениям..."
+                        class="w-full input-modern rounded-2xl px-5 py-4 pl-12 text-base"
+                        oninput="filterArchive()">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Фильтры по группам мышц -->
+            <div class="mb-6 animate-slide-up delay-100" style="opacity: 0;">
+                <div class="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1" id="archiveFilters">
+                    <button onclick="setArchiveFilter('')" class="filter-tag active px-4 py-2 rounded-2xl text-sm font-medium bg-white/80">Все</button>
+                </div>
+            </div>
+            
+            <!-- Календарь -->
+            <div class="glass-card rounded-3xl p-5 mb-6 animate-slide-up delay-200" style="opacity: 0;">
+                <!-- Навигация месяца -->
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="changeMonth(-1)" class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h3 id="calendarMonth" class="text-lg font-bold text-gray-800"></h3>
+                    <button onclick="changeMonth(1)" class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Дни недели -->
+                <div class="grid grid-cols-7 gap-1 mb-2">
+                    <div class="text-center text-xs font-medium text-gray-400 py-2">Пн</div>
+                    <div class="text-center text-xs font-medium text-gray-400 py-2">Вт</div>
+                    <div class="text-center text-xs font-medium text-gray-400 py-2">Ср</div>
+                    <div class="text-center text-xs font-medium text-gray-400 py-2">Чт</div>
+                    <div class="text-center text-xs font-medium text-gray-400 py-2">Пт</div>
+                    <div class="text-center text-xs font-medium text-gray-400 py-2">Сб</div>
+                    <div class="text-center text-xs font-medium text-gray-400 py-2">Вс</div>
+                </div>
+                
+                <!-- Сетка дней -->
+                <div id="calendarGrid" class="grid grid-cols-7 gap-1">
+                    <!-- Дни будут добавлены через JS -->
+                </div>
+            </div>
+            
+            <!-- Детали выбранного дня -->
+            <div id="dayDetails" class="animate-slide-up">
+                <!-- Контент будет добавлен через JS -->
+            </div>
+        </section>
+
+        <!-- Страница: Прогресс -->
+        <section id="page-progress" class="page hidden">
+            <!-- Личный рекорд -->
+            <div class="glass-card rounded-3xl p-6 mb-6 animate-slide-up">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-gray-800">Личный рекорд</h2>
+                    <div class="pr-badge px-3 py-1 rounded-full text-xs font-bold text-white">
+                        🏆 PR
+                    </div>
+                </div>
+                <div id="prBlock" class="text-center py-4">
+                    <p class="text-gray-400">Выберите упражнение для просмотра рекорда</p>
+                </div>
+            </div>
+
+            <!-- Выбор упражнения для графика -->
+            <div class="mb-6 animate-slide-up delay-100" style="opacity: 0;">
+                <select id="progressExerciseSelect" onchange="updateProgressChart()" 
+                    class="w-full input-modern rounded-2xl px-5 py-4 text-lg font-medium appearance-none cursor-pointer">
+                    <option value="">Выберите упражнение</option>
+                </select>
+            </div>
+
+            <!-- График -->
+            <div class="glass-card rounded-3xl p-5 mb-6 animate-slide-up delay-200" style="opacity: 0;">
+                <h3 class="text-sm font-semibold text-gray-500 mb-4">ДИНАМИКА ВЕСА</h3>
+                <div class="relative h-64">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Статистика -->
+            <div class="grid grid-cols-2 gap-4 animate-slide-up delay-300" style="opacity: 0;">
+                <div class="glass-card rounded-3xl p-5 text-center">
+                    <p class="text-3xl font-bold text-red-500" id="totalWorkouts">0</p>
+                    <p class="text-sm text-gray-500 mt-1">Тренировок</p>
+                </div>
+                <div class="glass-card rounded-3xl p-5 text-center">
+                    <p class="text-3xl font-bold text-red-500" id="totalExercises">0</p>
+                    <p class="text-sm text-gray-500 mt-1">Упражнений</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Страница: История (старая) -->
+        <section id="page-history" class="page hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-800">История тренировок</h2>
+                <button onclick="clearHistory()" class="text-sm text-red-500 font-medium">Очистить</button>
+            </div>
+            <div id="historyList" class="space-y-4">
+                <!-- История будет загружена через JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Нижняя навигация -->
+    <nav class="fixed bottom-0 left-0 right-0 glass-card border-t border-white/50 z-50 safe-bottom">
+        <div class="max-w-lg mx-auto px-6 py-4 pb-[max(16px,env(safe-area-inset-bottom))] flex justify-around">
+            <button onclick="switchPage('workout')" class="nav-item active flex flex-col items-center" data-page="workout">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                <span class="text-xs font-medium">Тренировка</span>
+                <div class="nav-dot w-1 h-1 bg-red-500 rounded-full mt-1"></div>
+            </button>
+            <button onclick="switchPage('archive')" class="nav-item flex flex-col items-center text-gray-400" data-page="archive">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span class="text-xs font-medium">Архив</span>
+                <div class="nav-dot w-1 h-1 bg-red-500 rounded-full mt-1"></div>
+            </button>
+            <button onclick="switchPage('progress')" class="nav-item flex flex-col items-center text-gray-400" data-page="progress">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span class="text-xs font-medium">Прогресс</span>
+                <div class="nav-dot w-1 h-1 bg-red-500 rounded-full mt-1"></div>
+            </button>
+            <button onclick="switchPage('history')" class="nav-item flex flex-col items-center text-gray-400" data-page="history">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-xs font-medium">История</span>
+                <div class="nav-dot w-1 h-1 bg-red-500 rounded-full mt-1"></div>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Модальное окно таймера -->
+    <div id="timerModal" class="fixed inset-0 modal-backdrop z-[100] hidden items-center justify-center p-6">
+        <div class="glass-card rounded-3xl p-8 w-full max-w-sm animate-slide-up">
+            <h2 class="text-xl font-bold text-center mb-6">Таймер отдыха</h2>
+            
+            <!-- Круговой таймер -->
+            <div class="relative w-48 h-48 mx-auto mb-6">
+                <svg class="w-full h-full -rotate-90">
+                    <circle cx="96" cy="96" r="88" fill="none" stroke="#f3f4f6" stroke-width="8"/>
+                    <circle id="timerRing" cx="96" cy="96" r="88" fill="none" stroke="url(#timerGradient)" stroke-width="8" class="timer-ring"/>
+                    <defs>
+                        <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ef4444"/>
+                            <stop offset="100%" stop-color="#991b1b"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span id="timerDisplay" class="text-4xl font-bold text-gray-800">1:30</span>
+                </div>
+            </div>
+            
+            <!-- Пресеты времени -->
+            <div class="flex justify-center gap-3 mb-6">
+                <button onclick="setTimerPreset(60)" class="px-4 py-2 rounded-xl bg-gray-100 text-sm font-medium hover:bg-gray-200 transition">1:00</button>
+                <button onclick="setTimerPreset(90)" class="px-4 py-2 rounded-xl bg-red-100 text-red-600 text-sm font-medium">1:30</button>
+                <button onclick="setTimerPreset(120)" class="px-4 py-2 rounded-xl bg-gray-100 text-sm font-medium hover:bg-gray-200 transition">2:00</button>
+                <button onclick="setTimerPreset(180)" class="px-4 py-2 rounded-xl bg-gray-100 text-sm font-medium hover:bg-gray-200 transition">3:00</button>
+            </div>
+            
+            <!-- Кнопки управления -->
+            <div class="flex gap-3">
+                <button onclick="toggleTimer()" id="timerToggleBtn" class="flex-1 btn-gradient text-white font-semibold py-4 rounded-2xl">
+                    Старт
+                </button>
+                <button onclick="resetTimer()" class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <button onclick="closeTimer()" class="w-full mt-4 py-3 text-gray-500 font-medium">Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ДАННЫЕ И КОНФИГУРАЦИЯ
+        // ==========================================
+        
+        /**
+         * Базовая база упражнений по категориям
+         * Будет дополняться пользовательскими упражнениями
+         */
+        const defaultExerciseDatabase = {
+            'Грудь': ['Жим лежа', 'Жим гантелей', 'Разводка', 'Кроссовер', 'Отжимания', 'Жим в хаммере'],
+            'Спина': ['Становая тяга', 'Тяга блока', 'Тяга штанги в наклоне', 'Подтягивания', 'Гиперэкстензия', 'Тяга гантели'],
+            'Ноги': ['Гак-присед', 'Жим ногами', 'Разгибание ног', 'Сгибание ног', 'Выпады', 'Приседания'],
+            'Плечи': ['Жим Арнольда', 'Махи гантелей', 'Тяга к подбородку', 'Разводка в стороны', 'Жим сидя'],
+            'Руки': ['Подъем на бицепс', 'Французский жим', 'Молотки', 'Трицепс на блоке', 'Сгибания Зоттмана'],
+            'Другое': ['Гравитрон', 'Смитт', 'Махи гирей', 'Планка', 'Скручивания']
+        };
+        
+        let exerciseDatabase = {};
+        let currentCategory = 'Грудь';
+        let workouts = [];
+        let progressChart = null;
+        
+        // Переменные таймера
+        let timerSeconds = 90;
+        let timerInterval = null;
+        let timerRunning = false;
+        let initialTimerSeconds = 90;
+        
+        // Календарь
+        let currentCalendarDate = new Date();
+        let selectedCalendarDate = null;
+        let archiveFilter = '';
+        let archiveSearchQuery = '';
+        
+        // Автокомплит
+        let autocompleteIndex = -1;
+
+        // ==========================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ==========================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            renderCategories();
+            renderArchiveFilters();
+            updateExerciseAutocomplete();
+            updateProgressExerciseSelect();
+            renderTodayWorkouts();
+            updateStats();
+            setCurrentDate();
+            renderCalendar();
+            setupAutocomplete();
+        });
+
+        /**
+         * Установка текущей даты в заголовке
+         */
+        function setCurrentDate() {
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            const date = new Date().toLocaleDateString('ru-RU', options);
+            document.getElementById('currentDate').textContent = date.charAt(0).toUpperCase() + date.slice(1);
+        }
+
+        // ==========================================
+        // РАБОТА С LOCALSTORAGE
+        // ==========================================
+        
+        /**
+         * Загрузка данных из LocalStorage
+         */
+        function loadFromLocalStorage() {
+            // Загружаем тренировки
+            const savedWorkouts = localStorage.getItem('fitlog_workouts');
+            if (savedWorkouts) {
+                workouts = JSON.parse(savedWorkouts);
+            }
+            
+            // Загружаем пользовательскую базу упражнений
+            const savedExercises = localStorage.getItem('fitlog_exercises');
+            if (savedExercises) {
+                exerciseDatabase = JSON.parse(savedExercises);
+            } else {
+                // Копируем дефолтную базу
+                exerciseDatabase = JSON.parse(JSON.stringify(defaultExerciseDatabase));
+            }
+        }
+
+        /**
+         * Сохранение данных в LocalStorage
+         */
+        function saveToLocalStorage() {
+            localStorage.setItem('fitlog_workouts', JSON.stringify(workouts));
+        }
+        
+        /**
+         * Сохранение базы упражнений в LocalStorage
+         */
+        function saveExerciseDatabase() {
+            localStorage.setItem('fitlog_exercises', JSON.stringify(exerciseDatabase));
+        }
+
+        /**
+         * Обновление базы упражнений новым названием
+         * @param {string} newName - Название нового упражнения
+         * @param {string} category - Категория упражнения
+         */
+        function updateExerciseDatabase(newName, category) {
+            if (!newName || !category) return;
+            
+            const normalizedName = newName.trim();
+            
+            // Проверяем, нет ли уже такого упражнения
+            if (!exerciseDatabase[category]) {
+                exerciseDatabase[category] = [];
+            }
+            
+            const exists = exerciseDatabase[category].some(
+                ex => ex.toLowerCase() === normalizedName.toLowerCase()
+            );
+            
+            if (!exists) {
+                exerciseDatabase[category].push(normalizedName);
+                saveExerciseDatabase();
+                showToast('✨ Новое упражнение добавлено в базу!');
+            }
+        }
+
+        // ==========================================
+        // АВТОКОМПЛИТ ДЛЯ УПРАЖНЕНИЙ
+        // ==========================================
+        
+        /**
+         * Настройка автокомплита
+         */
+        function setupAutocomplete() {
+            const input = document.getElementById('exerciseInput');
+            const dropdown = document.getElementById('exerciseDropdown');
+            
+            input.addEventListener('input', () => {
+                const query = input.value.toLowerCase().trim();
+                showAutocompleteDropdown(query);
+            });
+            
+            input.addEventListener('focus', () => {
+                showAutocompleteDropdown(input.value.toLowerCase().trim());
+            });
+            
+            input.addEventListener('blur', () => {
+                // Задержка для обработки клика по элементу
+                setTimeout(() => {
+                    dropdown.classList.add('hidden');
+                }, 200);
+            });
+            
+            input.addEventListener('keydown', (e) => {
+                const items = dropdown.querySelectorAll('.autocomplete-item');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    autocompleteIndex = Math.min(autocompleteIndex + 1, items.length - 1);
+                    updateAutocompleteHighlight(items);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    autocompleteIndex = Math.max(autocompleteIndex - 1, 0);
+                    updateAutocompleteHighlight(items);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (autocompleteIndex >= 0 && items[autocompleteIndex]) {
+                        selectAutocompleteItem(items[autocompleteIndex].textContent);
+                    }
+                }
+            });
+        }
+        
+        /**
+         * Показ выпадающего списка автокомплита
+         */
+        function showAutocompleteDropdown(query) {
+            const dropdown = document.getElementById('exerciseDropdown');
+            const exercises = exerciseDatabase[currentCategory] || [];
+            
+            let filtered = exercises;
+            if (query) {
+                filtered = exercises.filter(ex => 
+                    ex.toLowerCase().includes(query)
+                );
+            }
+            
+            if (filtered.length === 0 && query) {
+                dropdown.innerHTML = `
+                    <div class="autocomplete-item text-gray-400 italic">
+                        Новое упражнение: "${query}"
+                    </div>
+                `;
+            } else {
+                dropdown.innerHTML = filtered.map(ex => `
+                    <div class="autocomplete-item" onclick="selectAutocompleteItem('${ex}')">${ex}</div>
+                `).join('');
+            }
+            
+            dropdown.classList.remove('hidden');
+            autocompleteIndex = -1;
+        }
+        
+        /**
+         * Обновление подсветки в автокомплите
+         */
+        function updateAutocompleteHighlight(items) {
+            items.forEach((item, index) => {
+                item.classList.toggle('highlighted', index === autocompleteIndex);
+            });
+        }
+        
+        /**
+         * Выбор элемента из автокомплита
+         */
+        function selectAutocompleteItem(value) {
+            document.getElementById('exerciseInput').value = value;
+            document.getElementById('exerciseDropdown').classList.add('hidden');
+        }
+        
+        /**
+         * Обновление списка упражнений для автокомплита
+         */
+        function updateExerciseAutocomplete() {
+            // Автокомплит работает динамически
+        }
+
+        // ==========================================
+        // НАВИГАЦИЯ
+        // ==========================================
+        
+        /**
+         * Переключение между страницами
+         */
+        function switchPage(pageName) {
+            // Скрываем все страницы
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Показываем выбранную страницу
+            document.getElementById(`page-${pageName}`).classList.remove('hidden');
+            
+            // Обновляем навигацию
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (item.dataset.page === pageName) {
+                    item.classList.add('active');
+                    item.classList.remove('text-gray-400');
+                } else {
+                    item.classList.remove('active');
+                    item.classList.add('text-gray-400');
+                }
+            });
+            
+            // Специальные действия для страниц
+            if (pageName === 'progress') {
+                updateStats();
+                updateProgressExerciseSelect();
+                if (document.getElementById('progressExerciseSelect').value) {
+                    updateProgressChart();
+                }
+            } else if (pageName === 'history') {
+                renderHistory();
+            } else if (pageName === 'archive') {
+                renderCalendar();
+            }
+        }
+
+        // ==========================================
+        // КАТЕГОРИИ И УПРАЖНЕНИЯ
+        // ==========================================
+        
+        /**
+         * Рендер категорий мышечных групп
+         */
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            const categories = Object.keys(exerciseDatabase);
+            
+            container.innerHTML = categories.map(cat => `
+                <button onclick="selectCategory('${cat}')" 
+                    class="category-chip px-5 py-2.5 rounded-2xl text-sm font-medium whitespace-nowrap ${cat === currentCategory ? 'active' : 'bg-white/80 text-gray-600'}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        /**
+         * Выбор категории
+         */
+        function selectCategory(category) {
+            currentCategory = category;
+            renderCategories();
+            document.getElementById('exerciseInput').value = '';
+            showAutocompleteDropdown('');
+        }
+
+        /**
+         * Обновление селекта упражнений для страницы прогресса
+         */
+        function updateProgressExerciseSelect() {
+            const select = document.getElementById('progressExerciseSelect');
+            const allExercises = [...new Set(workouts.map(w => w.exercise))];
+            
+            select.innerHTML = '<option value="">Выберите упражнение</option>' +
+                allExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
+        }
+
+        // ==========================================
+        // ПАРСИНГ И СОХРАНЕНИЕ ТРЕНИРОВКИ
+        // ==========================================
+        
+        /**
+         * Умный парсинг строки подходов
+         * Преобразует "12/10/8" в [12, 10, 8]
+         * Поддерживает формат с весом: "10x50/8x55"
+         * @param {string} input - Строка с повторениями
+         * @returns {number[]} - Массив чисел
+         */
+        function parseSets(input) {
+            if (!input) return [];
+            
+            // Разделяем по слэшу, запятой или пробелу
+            return input
+                .split(/[\/,\s]+/)
+                .map(s => {
+                    // Обрабатываем формат "10x50" как просто "10"
+                    const match = s.match(/^(\d+)/);
+                    return match ? parseInt(match[1]) : null;
+                })
+                .filter(n => n !== null && n > 0);
+        }
+
+        /**
+         * Сохранение тренировки
+         */
+        function saveWorkout() {
+            const exercise = document.getElementById('exerciseInput').value.trim();
+            const weight = parseFloat(document.getElementById('weightInput').value);
+            const setsInput = document.getElementById('setsInput').value;
+            const notes = document.getElementById('notesInput').value.trim();
+            
+            // Валидация
+            if (!exercise) {
+                showToast('Введите название упражнения');
+                return;
+            }
+            
+            if (!weight || weight <= 0) {
+                showToast('Укажите вес');
+                return;
+            }
+            
+            const sets = parseSets(setsInput);
+            if (sets.length === 0) {
+                showToast('Введите повторения');
+                return;
+            }
+            
+            // Добавляем новое упражнение в базу, если его нет
+            updateExerciseDatabase(exercise, currentCategory);
+            
+            // Создаем запись
+            const workout = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                category: currentCategory,
+                exercise: exercise,
+                weight: weight,
+                sets: sets,
+                notes: notes
+            };
+            
+            workouts.push(workout);
+            saveToLocalStorage();
+            
+            // Очищаем форму
+            document.getElementById('weightInput').value = '';
+            document.getElementById('setsInput').value = '';
+            document.getElementById('notesInput').value = '';
+            document.getElementById('exerciseInput').value = '';
+            
+            // Обновляем UI
+            renderTodayWorkouts();
+            updateProgressExerciseSelect();
+            showToast('✅ Сохранено!');
+            
+            // Haptic feedback
+            if (typeof hapticFeedback === 'function') hapticFeedback('success');
+            
+            // Предлагаем запустить таймер
+            if (confirm('Запустить таймер отдыха?')) {
+                openTimer();
+                toggleTimer();
+            }
+        }
+
+        /**
+         * Показать уведомление с поддержкой safe-area
+         */
+        function showToast(message) {
+            // Удаляем предыдущие тосты
+            document.querySelectorAll('.toast-message').forEach(t => t.remove());
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-message fixed left-1/2 -translate-x-1/2 bg-gray-800/95 backdrop-blur-lg text-white px-6 py-3 rounded-2xl text-sm font-medium z-[200] animate-fade-in shadow-lg';
+            toast.style.top = `calc(80px + env(safe-area-inset-top, 0px))`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Haptic feedback
+            if (typeof hapticFeedback === 'function') hapticFeedback('light');
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // ==========================================
+        // ОТОБРАЖЕНИЕ ТРЕНИРОВОК
+        // ==========================================
+        
+        /**
+         * Рендер сегодняшних тренировок
+         */
+        function renderTodayWorkouts() {
+            const container = document.getElementById('todayList');
+            const today = new Date().toDateString();
+            
+            const todayWorkouts = workouts.filter(w => 
+                new Date(w.date).toDateString() === today
+            ).reverse();
+            
+            if (todayWorkouts.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <p>Пока нет записей</p>
+                        <p class="text-sm mt-1">Добавьте первое упражнение 💪</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = todayWorkouts.map((w, i) => `
+                <div class="history-item glass-card rounded-2xl p-4" style="animation-delay: ${i * 0.1}s">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <span class="text-xs px-2 py-1 rounded-lg bg-red-50 text-red-500 font-medium">${w.category}</span>
+                            <h3 class="font-semibold text-gray-800 mt-2">${w.exercise}</h3>
+                            <p class="text-sm text-gray-500 mt-1">
+                                <span class="text-red-500 font-bold">${w.weight} кг</span> · 
+                                ${w.sets.join(' / ')} повт.
+                            </p>
+                            ${w.notes ? `<p class="text-xs text-gray-400 mt-2 italic">"${w.notes}"</p>` : ''}
+                        </div>
+                        <button onclick="deleteWorkout(${w.id})" class="text-gray-300 hover:text-red-500 transition p-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /**
+         * Удаление тренировки
+         */
+        function deleteWorkout(id) {
+            if (confirm('Удалить запись?')) {
+                workouts = workouts.filter(w => w.id !== id);
+                saveToLocalStorage();
+                renderTodayWorkouts();
+                updateProgressExerciseSelect();
+                renderCalendar();
+                showToast('Удалено');
+            }
+        }
+
+        /**
+         * Рендер истории тренировок
+         */
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            
+            if (workouts.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <p>История пуста</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Группируем по датам
+            const grouped = {};
+            workouts.forEach(w => {
+                const dateKey = new Date(w.date).toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                if (!grouped[dateKey]) grouped[dateKey] = [];
+                grouped[dateKey].push(w);
+            });
+            
+            // Сортируем даты (новые сверху)
+            const sortedDates = Object.keys(grouped).sort((a, b) => {
+                return new Date(grouped[b][0].date) - new Date(grouped[a][0].date);
+            });
+            
+            container.innerHTML = sortedDates.map((date, di) => `
+                <div class="history-item" style="animation-delay: ${di * 0.1}s">
+                    <h3 class="text-sm font-semibold text-gray-500 mb-3">${date}</h3>
+                    <div class="space-y-2">
+                        ${grouped[date].reverse().map(w => `
+                            <div class="glass-card rounded-2xl p-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <span class="text-xs px-2 py-1 rounded-lg bg-gray-100 text-gray-500">${w.category}</span>
+                                        <h4 class="font-semibold text-gray-800 mt-2">${w.exercise}</h4>
+                                        <p class="text-sm text-gray-500">
+                                            <span class="text-red-500 font-bold">${w.weight} кг</span> · 
+                                            ${w.sets.join(' / ')} повт.
+                                        </p>
+                                        ${w.notes ? `<p class="text-xs text-gray-400 mt-1 italic">"${w.notes}"</p>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /**
+         * Очистка истории
+         */
+        function clearHistory() {
+            if (confirm('Удалить всю историю тренировок?')) {
+                workouts = [];
+                saveToLocalStorage();
+                renderHistory();
+                renderTodayWorkouts();
+                renderCalendar();
+                updateProgressExerciseSelect();
+                updateStats();
+                showToast('История очищена');
+            }
+        }
+
+        // ==========================================
+        // КАЛЕНДАРЬ ТРЕНИРОВОК
+        // ==========================================
+        
+        /**
+         * Рендер фильтров для архива
+         */
+        function renderArchiveFilters() {
+            const container = document.getElementById('archiveFilters');
+            const categories = Object.keys(exerciseDatabase);
+            
+            container.innerHTML = `
+                <button onclick="setArchiveFilter('')" class="filter-tag ${archiveFilter === '' ? 'active' : 'bg-white/80 text-gray-600'} px-4 py-2 rounded-2xl text-sm font-medium whitespace-nowrap">Все</button>
+                ${categories.map(cat => `
+                    <button onclick="setArchiveFilter('${cat}')" 
+                        class="filter-tag ${archiveFilter === cat ? 'active' : 'bg-white/80 text-gray-600'} px-4 py-2 rounded-2xl text-sm font-medium whitespace-nowrap">
+                        ${cat}
+                    </button>
+                `).join('')}
+            `;
+        }
+        
+        /**
+         * Установка фильтра архива
+         */
+        function setArchiveFilter(filter) {
+            archiveFilter = filter;
+            renderArchiveFilters();
+            renderCalendar();
+        }
+        
+        /**
+         * Фильтрация архива по поисковому запросу
+         */
+        function filterArchive() {
+            archiveSearchQuery = document.getElementById('archiveSearch').value.toLowerCase().trim();
+            renderCalendar();
+        }
+        
+        /**
+         * Смена месяца в календаре
+         */
+        function changeMonth(delta) {
+            const grid = document.getElementById('calendarGrid');
+            grid.classList.add(delta > 0 ? 'animate-slide-left' : 'animate-slide-right');
+            
+            setTimeout(() => {
+                currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+                selectedCalendarDate = null;
+                renderCalendar();
+                grid.classList.remove('animate-slide-left', 'animate-slide-right');
+            }, 150);
+        }
+        
+        /**
+         * Получение тренировок за конкретную дату
+         */
+        function getWorkoutsForDate(date) {
+            const dateStr = date.toDateString();
+            return workouts.filter(w => {
+                const workoutDate = new Date(w.date).toDateString();
+                if (workoutDate !== dateStr) return false;
+                
+                // Применяем фильтр категории
+                if (archiveFilter && w.category !== archiveFilter) return false;
+                
+                // Применяем поисковый запрос
+                if (archiveSearchQuery && !w.exercise.toLowerCase().includes(archiveSearchQuery)) return false;
+                
+                return true;
+            });
+        }
+        
+        /**
+         * Проверка, есть ли тренировки за дату (с учетом фильтров)
+         */
+        function hasWorkoutsOnDate(date) {
+            return getWorkoutsForDate(date).length > 0;
+        }
+        
+        /**
+         * Рендер календаря
+         */
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const monthLabel = document.getElementById('calendarMonth');
+            
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            
+            // Название месяца
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                               'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            monthLabel.textContent = `${monthNames[month]} ${year}`;
+            
+            // Первый день месяца
+            const firstDay = new Date(year, month, 1);
+            let startDay = firstDay.getDay();
+            if (startDay === 0) startDay = 7; // Воскресенье = 7
+            startDay--; // Понедельник = 0
+            
+            // Количество дней в месяце
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Сегодня
+            const today = new Date();
+            const todayStr = today.toDateString();
+            
+            let html = '';
+            
+            // Пустые ячейки в начале
+            for (let i = 0; i < startDay; i++) {
+                html += '<div class="h-10"></div>';
+            }
+            
+            // Дни месяца
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dateStr = date.toDateString();
+                const hasWorkouts = hasWorkoutsOnDate(date);
+                const isToday = dateStr === todayStr;
+                const isSelected = selectedCalendarDate && dateStr === selectedCalendarDate.toDateString();
+                
+                // Проверяем, подходит ли день под фильтр
+                const matchesFilter = !archiveFilter && !archiveSearchQuery ? true : hasWorkouts;
+                
+                let classes = 'calendar-day w-full h-10 rounded-xl flex items-center justify-center text-sm font-medium cursor-pointer';
+                
+                if (isSelected) {
+                    classes += ' selected';
+                } else if (isToday) {
+                    classes += ' today';
+                }
+                
+                if (hasWorkouts) {
+                    classes += ' has-workout';
+                    if (archiveFilter || archiveSearchQuery) {
+                        classes += ' filtered';
+                    }
+                }
+                
+                if ((archiveFilter || archiveSearchQuery) && !hasWorkouts) {
+                    classes += ' dimmed';
+                }
+                
+                html += `
+                    <button class="${classes}" onclick="selectCalendarDate(${year}, ${month}, ${day})">
+                        ${day}
+                    </button>
+                `;
+            }
+            
+            grid.innerHTML = html;
+            
+            // Обновляем детали, если выбрана дата
+            if (selectedCalendarDate) {
+                renderDayDetails(selectedCalendarDate);
+            } else {
+                document.getElementById('dayDetails').innerHTML = '';
+            }
+        }
+        
+        /**
+         * Выбор даты в календаре
+         */
+        function selectCalendarDate(year, month, day) {
+            selectedCalendarDate = new Date(year, month, day);
+            renderCalendar();
+            renderDayDetails(selectedCalendarDate);
+        }
+        
+        /**
+         * Рендер деталей выбранного дня
+         */
+        function renderDayDetails(date) {
+            const container = document.getElementById('dayDetails');
+            const dayWorkouts = getWorkoutsForDate(date);
+            
+            const dateStr = date.toLocaleDateString('ru-RU', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+            });
+            
+            if (dayWorkouts.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-card rounded-3xl p-8 text-center animate-fade-in">
+                        <div class="text-4xl mb-4">😴</div>
+                        <h3 class="font-semibold text-gray-700 mb-2">${dateStr}</h3>
+                        <p class="text-gray-400">В этот день ты отдыхал.</p>
+                        <p class="text-sm text-gray-400 mt-1">Время восстановиться!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="glass-card rounded-3xl p-5 animate-fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800">${dateStr}</h3>
+                        <button onclick="repeatWorkouts('${date.toISOString()}')" 
+                            class="px-4 py-2 rounded-xl bg-red-50 text-red-500 text-sm font-medium hover:bg-red-100 transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Повторить
+                        </button>
+                    </div>
+                    <div class="space-y-3">
+                        ${dayWorkouts.map(w => `
+                            <div class="bg-white/50 rounded-2xl p-4">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <span class="text-xs px-2 py-1 rounded-lg bg-gray-100 text-gray-500">${w.category}</span>
+                                        <h4 class="font-semibold text-gray-800 mt-2">${w.exercise}</h4>
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            <span class="text-red-500 font-bold">${w.weight} кг</span> · 
+                                            ${w.sets.join(' / ')} повт.
+                                        </p>
+                                        ${w.notes ? `<p class="text-xs text-gray-400 mt-2 italic bg-yellow-50 px-2 py-1 rounded-lg inline-block">"${w.notes}"</p>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        /**
+         * Повторить тренировки из выбранной даты
+         */
+        function repeatWorkouts(dateISO) {
+            const date = new Date(dateISO);
+            const dayWorkouts = getWorkoutsForDate(date);
+            
+            if (dayWorkouts.length === 0) {
+                showToast('Нет тренировок для повтора');
+                return;
+            }
+            
+            // Копируем тренировки на сегодня
+            const today = new Date().toISOString();
+            
+            dayWorkouts.forEach(w => {
+                const newWorkout = {
+                    id: Date.now() + Math.random(),
+                    date: today,
+                    category: w.category,
+                    exercise: w.exercise,
+                    weight: w.weight,
+                    sets: [...w.sets],
+                    notes: `Повтор от ${date.toLocaleDateString('ru-RU')}`
+                };
+                workouts.push(newWorkout);
+            });
+            
+            saveToLocalStorage();
+            renderTodayWorkouts();
+            renderCalendar();
+            switchPage('workout');
+            showToast(`🔄 Скопировано ${dayWorkouts.length} упражнений`);
+        }
+
+        // ==========================================
+        // ПРОГРЕСС И АНАЛИТИКА
+        // ==========================================
+        
+        /**
+         * Обновление статистики
+         */
+        function updateStats() {
+            const uniqueDates = new Set(workouts.map(w => new Date(w.date).toDateString()));
+            document.getElementById('totalWorkouts').textContent = uniqueDates.size;
+            document.getElementById('totalExercises').textContent = workouts.length;
+        }
+
+        /**
+         * Обновление графика прогресса и блока PR
+         */
+        function updateProgressChart() {
+            const exercise = document.getElementById('progressExerciseSelect').value;
+            if (!exercise) return;
+            
+            // Фильтруем данные по упражнению
+            const exerciseData = workouts
+                .filter(w => w.exercise === exercise)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Обновляем блок личного рекорда
+            const prBlock = document.getElementById('prBlock');
+            if (exerciseData.length > 0) {
+                const maxWeight = Math.max(...exerciseData.map(w => w.weight));
+                const prWorkout = exerciseData.find(w => w.weight === maxWeight);
+                const prDate = new Date(prWorkout.date).toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'short'
+                });
+                
+                prBlock.innerHTML = `
+                    <p class="text-5xl font-bold bg-gradient-to-r from-red-500 to-red-800 bg-clip-text text-transparent">${maxWeight} кг</p>
+                    <p class="text-gray-500 mt-2">${exercise}</p>
+                    <p class="text-sm text-gray-400 mt-1">Установлен ${prDate}</p>
+                `;
+            }
+            
+            // Подготовка данных для графика
+            const labels = exerciseData.map(w => 
+                new Date(w.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+            );
+            const data = exerciseData.map(w => w.weight);
+            
+            // Уничтожаем предыдущий график
+            if (progressChart) {
+                progressChart.destroy();
+            }
+            
+            // Создаем новый график
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(239, 68, 68, 0.3)');
+            gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+            
+            progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Вес (кг)',
+                        data: data,
+                        borderColor: '#ef4444',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ef4444',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // ТАЙМЕР ОТДЫХА
+        // ==========================================
+        
+        /**
+         * Открытие модального окна таймера
+         */
+        function openTimer() {
+            document.getElementById('timerModal').classList.remove('hidden');
+            document.getElementById('timerModal').classList.add('flex');
+        }
+
+        /**
+         * Закрытие модального окна таймера
+         */
+        function closeTimer() {
+            document.getElementById('timerModal').classList.add('hidden');
+            document.getElementById('timerModal').classList.remove('flex');
+            resetTimer();
+        }
+
+        /**
+         * Установка пресета времени
+         */
+        function setTimerPreset(seconds) {
+            timerSeconds = seconds;
+            initialTimerSeconds = seconds;
+            updateTimerDisplay();
+            resetTimer();
+            
+            // Обновляем активную кнопку пресета
+            document.querySelectorAll('#timerModal button[onclick^="setTimerPreset"]').forEach(btn => {
+                btn.classList.remove('bg-red-100', 'text-red-600');
+                btn.classList.add('bg-gray-100');
+            });
+            event.target.classList.remove('bg-gray-100');
+            event.target.classList.add('bg-red-100', 'text-red-600');
+        }
+
+        /**
+         * Запуск/остановка таймера
+         */
+        function toggleTimer() {
+            const btn = document.getElementById('timerToggleBtn');
+            
+            if (timerRunning) {
+                // Остановка
+                clearInterval(timerInterval);
+                timerRunning = false;
+                btn.textContent = 'Продолжить';
+            } else {
+                // Запуск
+                timerRunning = true;
+                btn.textContent = 'Пауза';
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    updateTimerRing();
+                    
+                    if (timerSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        timerRunning = false;
+                        btn.textContent = 'Старт';
+                        
+                        // Вибрация и звук для iOS
+                        if (typeof hapticFeedback === 'function') {
+                            hapticFeedback('heavy');
+                        }
+                        if ('vibrate' in navigator) {
+                            navigator.vibrate([200, 100, 200, 100, 200]);
+                        }
+                        
+                        // Пытаемся воспроизвести звук уведомления
+                        try {
+                            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                            const oscillator = audioContext.createOscillator();
+                            const gainNode = audioContext.createGain();
+                            oscillator.connect(gainNode);
+                            gainNode.connect(audioContext.destination);
+                            oscillator.frequency.value = 800;
+                            oscillator.type = 'sine';
+                            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                            oscillator.start(audioContext.currentTime);
+                            oscillator.stop(audioContext.currentTime + 0.5);
+                        } catch(e) {}
+                        
+                        showToast('⏰ Время отдыха закончилось!');
+                    }
+                }, 1000);
+            }
+        }
+
+        /**
+         * Сброс таймера
+         */
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerSeconds = initialTimerSeconds;
+            updateTimerDisplay();
+            updateTimerRing();
+            document.getElementById('timerToggleBtn').textContent = 'Старт';
+        }
+
+        /**
+         * Обновление отображения времени
+         */
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        /**
+         * Обновление кругового индикатора таймера
+         */
+        function updateTimerRing() {
+            const ring = document.getElementById('timerRing');
+            const circumference = 2 * Math.PI * 88; // 88 = радиус круга
+            const progress = timerSeconds / initialTimerSeconds;
+            const offset = circumference * (1 - progress);
+            ring.style.strokeDashoffset = offset;
+        }
+    </script>
+    <!-- Service Worker и PWA логика -->
+    <script>
+        // ==========================================
+        // PWA: SERVICE WORKER И УСТАНОВКА
+        // ==========================================
+        
+        /**
+         * Регистрация Service Worker для офлайн работы
+         */
+        if ('serviceWorker' in navigator) {
+            // Создаем Service Worker inline через Blob
+            const swCode = `
+                const CACHE_NAME = 'fitlog-v1';
+                const OFFLINE_URLS = [
+                    '/',
+                    '/index.html'
+                ];
+                
+                // Установка: кэшируем основные ресурсы
+                self.addEventListener('install', (event) => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME).then((cache) => {
+                            return cache.addAll(OFFLINE_URLS);
+                        })
+                    );
+                    self.skipWaiting();
+                });
+                
+                // Активация: очищаем старые кэши
+                self.addEventListener('activate', (event) => {
+                    event.waitUntil(
+                        caches.keys().then((cacheNames) => {
+                            return Promise.all(
+                                cacheNames.filter((name) => name !== CACHE_NAME)
+                                    .map((name) => caches.delete(name))
+                            );
+                        })
+                    );
+                    self.clients.claim();
+                });
+                
+                // Стратегия: сначала сеть, затем кэш
+                self.addEventListener('fetch', (event) => {
+                    event.respondWith(
+                        fetch(event.request)
+                            .then((response) => {
+                                // Кэшируем успешные ответы
+                                if (response.status === 200) {
+                                    const responseClone = response.clone();
+                                    caches.open(CACHE_NAME).then((cache) => {
+                                        cache.put(event.request, responseClone);
+                                    });
+                                }
+                                return response;
+                            })
+                            .catch(() => {
+                                // При ошибке сети возвращаем из кэша
+                                return caches.match(event.request);
+                            })
+                    );
+                });
+            `;
+            
+            const swBlob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(swBlob);
+            
+            navigator.serviceWorker.register(swUrl)
+                .then((registration) => {
+                    console.log('✅ Service Worker зарегистрирован:', registration.scope);
+                })
+                .catch((error) => {
+                    console.log('❌ Service Worker ошибка:', error);
+                });
+        }
+        
+        /**
+         * Определение iOS устройства
+         */
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+        
+        /**
+         * Проверка, запущено ли приложение в standalone режиме
+         */
+        function isInStandaloneMode() {
+            return (window.matchMedia('(display-mode: standalone)').matches) || 
+                   (window.navigator.standalone) || 
+                   document.referrer.includes('android-app://');
+        }
+        
+        /**
+         * Показ баннера установки для iOS
+         */
+        function showInstallBanner() {
+            // Проверяем, не показывали ли уже баннер
+            const dismissed = localStorage.getItem('fitlog_install_dismissed');
+            if (dismissed) return;
+            
+            // Показываем только на iOS и не в standalone режиме
+            if (isIOS() && !isInStandaloneMode()) {
+                setTimeout(() => {
+                    document.getElementById('installBanner').classList.remove('hidden');
+                }, 2000);
+            }
+        }
+        
+        /**
+         * Скрытие баннера установки
+         */
+        function hideInstallBanner() {
+            document.getElementById('installBanner').classList.add('hidden');
+            localStorage.setItem('fitlog_install_dismissed', 'true');
+        }
+        
+        // Показываем баннер при загрузке
+        document.addEventListener('DOMContentLoaded', showInstallBanner);
+        
+        /**
+         * Предотвращение зума при двойном тапе на iOS
+         */
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        /**
+         * Фикс для 100vh на iOS Safari
+         */
+        function setVH() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        
+        setVH();
+        window.addEventListener('resize', setVH);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(setVH, 100);
+        });
+        
+        /**
+         * Haptic Feedback для iOS (если доступен)
+         */
+        function hapticFeedback(type = 'light') {
+            if ('vibrate' in navigator) {
+                switch(type) {
+                    case 'light':
+                        navigator.vibrate(10);
+                        break;
+                    case 'medium':
+                        navigator.vibrate(20);
+                        break;
+                    case 'heavy':
+                        navigator.vibrate([30, 10, 30]);
+                        break;
+                    case 'success':
+                        navigator.vibrate([10, 50, 20]);
+                        break;
+                    case 'error':
+                        navigator.vibrate([50, 30, 50, 30, 50]);
+                        break;
+                }
+            }
+        }
+        
+        /**
+         * Уведомление для standalone режима
+         */
+        if (isInStandaloneMode()) {
+            console.log('🚀 FitLog запущен как приложение!');
+        }
+    </script>
+</body>
+</html>
